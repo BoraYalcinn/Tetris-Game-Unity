@@ -1,10 +1,28 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-
-
-
-public class Tetromino : MonoBehaviour
+using UnityEngine.Tilemaps;
+public enum Tetromino
 {
-        
+    I,
+    O,
+    T,
+    J,
+    L,
+    S,
+    Z,
+}
+
+
+[System.Serializable]
+
+public struct TetrominoData
+{
+    public Tetromino tetromino;
+    public Tile tile;
+    public Vector2Int[] cells {get;set;} // we have turned this field into a C# property by adding getter and setter ,so that it won't be visible in Unity Engine   
+
+    public void Initalize()
+    {
+        this.cells = Data.Cells[this.tetromino];
+    }
+    
 }

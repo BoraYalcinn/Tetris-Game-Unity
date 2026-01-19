@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
-public class Board : MonoBehaviour 
+
+public class Board : MonoBehaviour
 {
-        
+        public TetrominoData[] tetrominoData;
 }
