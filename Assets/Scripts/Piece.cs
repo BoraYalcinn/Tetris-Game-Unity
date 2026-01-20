@@ -25,13 +25,35 @@ public class Piece : MonoBehaviour
         }
         
         private void Update()
-        {
+        {       
+                this.board.Clear(this);
+                
                 if (Input.GetKeyDown(KeyCode.A))
                 {
                         Move(Vector2Int.left);
                 }else if (Input.GetKeyDown(KeyCode.D))
                 {
                         Move(Vector2Int.right);
+                }
+
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                        Move(Vector2Int.down);
+                }
+
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                        HardDrop();        
+                }
+                
+                this.board.Set(this);
+        }
+
+        private void HardDrop()
+        {
+                while (Move(Vector2Int.down))
+                {
+                        continue;
                 }
         }
 
@@ -52,23 +74,6 @@ public class Piece : MonoBehaviour
         }
         
         
-        public void Fall()
-        {
-                Vector3Int nextPosition = position + Vector3Int.down;
-
-                board.Clear(this);
-
-                if (board.IsValidPosition(this, nextPosition))
-                {
-                        position = nextPosition;
-                }
-                else
-                {
-                        board.Lock(this);
-                        return;
-                }
-
-                board.Set(this);
-        }
+        
         
 }
