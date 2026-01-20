@@ -51,10 +51,10 @@ public class Board : MonoBehaviour
                 SpawnPiece();
         }
 
-        private bool isGameOver()
+        private void GameOver()
         {
-                // TODO
-                return true 
+                this.tilemap.ClearAllTiles();
+                // Further More Improvements will be made to game TODO
         }
         
         public void SpawnPiece()
@@ -63,6 +63,16 @@ public class Board : MonoBehaviour
                 TetrominoData data = this.tetrominoData[random];
                 
                 this.activePiece.Initialize(this,this.spawnPosition,data);
+
+                if (IsValidPosition(this.activePiece, this.spawnPosition))
+                {
+                        Set(this.activePiece);
+                }
+                else
+                {
+                        GameOver();
+                }
+                
                 Set(this.activePiece);
         }
 
