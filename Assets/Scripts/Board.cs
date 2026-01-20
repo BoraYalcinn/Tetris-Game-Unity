@@ -6,16 +6,28 @@ using UnityEngine.Windows.WebCam;
 public class Board : MonoBehaviour
 {
         public Tilemap tilemap { get; private set; }
+        
         public Piece activePiece { get; private set; }
         public TetrominoData[] tetrominoData;
         public  Vector3Int spawnPosition;
+
+        public Vector2Int boardSize = new Vector2Int(10, 20);
         
         private float stepDelay = 1f;
         private float stepTime;
-        
+
+        public RectInt Bounds
+        {
+                get
+                {
+                        Vector2Int position = new Vector2Int(-this.boardSize.x / 2, -this.boardSize.y / 2);
+                        return new RectInt(position,this.boardSize);
+                }
+        }
         
         private void Awake()
-        {
+        {       
+                
                 this.tilemap = GetComponentInChildren<Tilemap>();
                 this.activePiece = GetComponentInChildren<Piece>();
                 
@@ -69,18 +81,28 @@ public class Board : MonoBehaviour
                         this.tilemap.SetTile(tilePosition, piece.data.tile);
                 }
         }
-        public bool isPositionValid(Piece piece ,Vector3Int position)
+        public bool IsValidPosition(Piece piece, Vector3Int position)
         {
+                RectInt bounds = this.Bounds;
+
                 foreach (Vector3Int cell in piece.cells)
                 {
-                        Vector3Int tilePosition = position + cell;
-                        
-                        if (tilemap.HasTile(tilePosition))
+                        Vector3Int tilePosition = position + cell; 
+
+                        if (!bounds.Contains((Vector2Int)tilePosition))
+                        {
                                 return false;
+                        }
+
+                        if (this.tilemap.HasTile(tilePosition))
+                        {
+                                return false;
+                        }
                 }
 
                 return true;
         }
+
 
         public void Lock(Piece piece)
         {

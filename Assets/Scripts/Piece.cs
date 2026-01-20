@@ -23,7 +23,34 @@ public class Piece : MonoBehaviour
                         this.cells[i] = (Vector3Int)data.cells[i];
                 }
         }
+        
+        private void Update()
+        {
+                if (Input.GetKeyDown(KeyCode.A))
+                {
+                        Move(Vector2Int.left);
+                }else if (Input.GetKeyDown(KeyCode.D))
+                {
+                        Move(Vector2Int.right);
+                }
+        }
 
+        private bool Move(Vector2Int translation)
+        {
+                Vector3Int newPosition = this.position;
+                newPosition.x += translation.x;
+                newPosition.y += translation.y;
+
+                bool valid = this.board.IsValidPosition(this,newPosition);
+
+                if (valid)
+                {
+                        this.position = newPosition;
+                }
+
+                return valid;
+        }
+        
         
         public void Fall()
         {
@@ -31,7 +58,7 @@ public class Piece : MonoBehaviour
 
                 board.Clear(this);
 
-                if (board.isPositionValid(this, nextPosition))
+                if (board.IsValidPosition(this, nextPosition))
                 {
                         position = nextPosition;
                 }
