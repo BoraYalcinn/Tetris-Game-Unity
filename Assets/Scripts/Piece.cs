@@ -9,12 +9,27 @@ public class Piece : MonoBehaviour
         public Vector3Int[] cells { get; private set; }
         public Vector3Int position { get; private set; }
         public int rotationIndex { get; private set; }
+
+        public float stepDelay = 1f;
+        public float lockDelay = 0.5f;
+        
+        public float moveDelay = 0.15f;   // DAS
+        public float moveRepeat = 0.05f;  // ARR
+
+        private float moveTime;
+        private int moveDirection;
+        
+        private float stepTime;
+        private float lockTime;
         
         public void Initialize(Board board,Vector3Int position, TetrominoData data)
         {
                 this.board = board;
                 this.position = position;
                 this.data = data;
+                this.rotationIndex = 0;
+                this.stepTime = Time.time + this.stepDelay;
+                this.lockTime = 0f;
 
                 if (this.cells == null)
                 {
@@ -31,33 +46,74 @@ public class Piece : MonoBehaviour
         {       
                 this.board.Clear(this);
 
-                if (Input.GetKeyDown(KeyCode.Q))
+                this.lockTime += Time.deltaTime;
+
+                HandleMovement();
+
+                if (Time.time >= this.stepTime)
                 {
-                        Rotate(-1);
-                }else if (Input.GetKeyDown(KeyCode.E))
-                {
-                        Rotate(1);
+                        Step();
                 }
                 
-                if (Input.GetKeyDown(KeyCode.A))
-                {
-                        Move(Vector2Int.left);
-                }else if (Input.GetKeyDown(KeyCode.D))
-                {
-                        Move(Vector2Int.right);
-                }
-
-                if (Input.GetKeyDown(KeyCode.S))
-                {
-                        Move(Vector2Int.down);
-                }
-
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                        HardDrop();        
-                }
                 
                 this.board.Set(this);
+        }
+        private void HandleMovement()
+        {
+                int direction = 0;
+
+                if (Input.GetKey(KeyCode.A)|| Input.GetKeyDown(KeyCode.A)) direction = -1;
+                else if (Input.GetKey(KeyCode.D) || Input.GetKeyDown(KeyCode.D)) direction = 1;
+                else if (Input.GetKeyDown(KeyCode.S))
+                {
+                        Move(Vector2Int.down);
+                } 
+                else if (Input.GetKeyDown(KeyCode.Space))
+                {
+                        HardDrop();
+                }
+                
+                if (direction != 0)
+                {
+                        
+                        if (direction != moveDirection)
+                        {
+                                moveDirection = direction;
+                                moveTime = Time.time + moveDelay;
+                                Move(new Vector2Int(direction, 0));
+                                
+                        }
+                        
+                        else if (Time.time >= moveTime)
+                        {
+                                moveTime = Time.time + moveRepeat;
+                                Move(new Vector2Int(direction, 0));
+                                
+                        }
+                }
+                else
+                {
+                        moveDirection = 0;
+                }
+        }
+
+
+        private void Step()
+        {
+                this.stepTime = Time.time + this.stepDelay;
+                
+                Move(Vector2Int.down);
+
+                if (this.lockTime >= this.lockDelay)
+                {
+                        Lock();
+                }
+        }
+
+        private void Lock()
+        {
+                this.board.Set(this);
+                this.board.SpawnPiece();
         }
 
         private void Rotate(int direction)
@@ -112,6 +168,7 @@ public class Piece : MonoBehaviour
                 {
                         continue;
                 }
+                Lock();
         }
 
         private bool Move(Vector2Int translation)
@@ -125,6 +182,7 @@ public class Piece : MonoBehaviour
                 if (valid)
                 {
                         this.position = newPosition;
+                        this.lockTime = 0f;
                 }
 
                 return valid;
