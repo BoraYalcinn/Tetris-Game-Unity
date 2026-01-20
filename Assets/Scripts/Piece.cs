@@ -47,7 +47,8 @@ public class Piece : MonoBehaviour
                 this.board.Clear(this);
 
                 this.lockTime += Time.deltaTime;
-
+                
+                HandleRotation();
                 HandleMovement();
 
                 if (Time.time >= this.stepTime)
@@ -58,6 +59,8 @@ public class Piece : MonoBehaviour
                 
                 this.board.Set(this);
         }
+        
+        
         private void HandleMovement()
         {
                 int direction = 0;
@@ -97,6 +100,15 @@ public class Piece : MonoBehaviour
                 }
         }
 
+        private void HandleRotation()
+        {
+                if (Input.GetKeyDown(KeyCode.Q)) {
+                        Rotate(-1);
+                } else if (Input.GetKeyDown(KeyCode.E)) {
+                        Rotate(1);
+                }
+        }
+
 
         private void Step()
         {
@@ -113,6 +125,7 @@ public class Piece : MonoBehaviour
         private void Lock()
         {
                 this.board.Set(this);
+                this.board.ClearLines();
                 this.board.SpawnPiece();
         }
 
