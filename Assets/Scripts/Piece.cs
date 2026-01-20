@@ -23,4 +23,25 @@ public class Piece : MonoBehaviour
                         this.cells[i] = (Vector3Int)data.cells[i];
                 }
         }
+
+        
+        public void Fall()
+        {
+                Vector3Int nextPosition = position + Vector3Int.down;
+
+                board.Clear(this);
+
+                if (board.isPositionValid(this, nextPosition))
+                {
+                        position = nextPosition;
+                }
+                else
+                {
+                        board.Lock(this);
+                        return;
+                }
+
+                board.Set(this);
+        }
+        
 }
